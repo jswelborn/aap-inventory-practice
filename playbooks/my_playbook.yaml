@@ -7,8 +7,9 @@
     - name: Display inventory report
       ansible.builtin.debug:
         msg: >-
-          Inventory hostname: {{ item }}
-          IP Address: {{ hostvars[item].ansible_host }}
-          Environment: {{ hostvars[item].environment_name }}
-          Application: {{ hostvars[item].application_name }}
+           Inventory hostname: {{ item }}
+           IP Address: {{ hostvars[item].ansible_host }}
+           Application: {{ hostvars[item].application_name }}
       loop: "{{ query('ansible.builtin.inventory_hostnames', 'all') }}"
+      when: 
+        - hostvars[item].environment_name == 'production'
