@@ -1,12 +1,14 @@
 ---
-- hosts: localhost
+- name: Report inventory hosts
+  hosts: localhost
   gather_facts: false
+
   tasks:
-    - name: Parse inventory
+    - name: Display inventory report
       ansible.builtin.debug:
         msg: >-
-             Inventory hostname: {{ item.key }}
-             IP Address: {{ item.value.ansible_host }}
-             Environment: {{ item.value.environment_name }}
-             Application: {{ item.value.application_name }}
-      loop: "{{ hostvars | dict2items }}"
+          Inventory hostname: {{ item }}
+          IP Address: {{ hostvars[item].ansible_host }}
+          Environment: {{ hostvars[item].environment_name }}
+          Application: {{ hostvars[item].application_name }}
+      loop: "{{ query('ansible.builtin.inventory_hostnames', 'all') }}"
