@@ -8,9 +8,10 @@
       ansible.builtin.debug:
         msg: >-
           Inventory Hostname: {{ item }}
-          Environment: {{ hostvars[item].environment_name }}
-          Region: {{ hostvars[item].region }}
+          IP Address: {{ hostvars[item].ansible_host }}
           Application: {{ hostvars[item].application_name }}
+          Backup Status: {{ hostvars[item].backup_enabled }}
       loop: "{{ query('ansible.builtin.inventory_hostnames', 'all') }}"
       when:
-        - hostvars[item].backup_enabled
+        - hostvars[item].environment_name == 'production'
+        - hostvars[item].region == 'us-east-1'
