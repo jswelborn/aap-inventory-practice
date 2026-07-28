@@ -1,15 +1,22 @@
 ---
-- name: Report inventory hosts
+- name: Report AWS applications
   hosts: localhost
   gather_facts: false
 
   tasks:
-    - name: Display inventory report
+    - name: Display AWS application report
       ansible.builtin.debug:
-        msg: >-
-          Cloud Providers:
-          {{ query('ansible.builtin.inventory_hostnames', 'all')
-             | map('extract', hostvars, 'cloud')
-             | unique
-             | sort
-             | list }}
+        msg: |
+          Application: {{ item.value.application_name }}
+          Inventory hostname: {{ item.key }}
+          Region: {{ item.value.region }}
+      loop: >-
+        {{
+          hostvars
+          | dict2items
+          | selectattr('value.cloud', 'defined')
+          | selectattr('value.cloud', 'equalto', 'aws')
+          | sort(attribute='value.application_name')
+          | unique(attribute='value.application_name')
+          | list
+        }}
