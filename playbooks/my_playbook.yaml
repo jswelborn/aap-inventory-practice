@@ -7,11 +7,9 @@
     - name: Display inventory report
       ansible.builtin.debug:
         msg: >-
-          Inventory Hostname: {{ item }}
-          IP Address: {{ hostvars[item].ansible_host }}
-          Application: {{ hostvars[item].application_name }}
-          Backup Status: {{ hostvars[item].backup_enabled }}
-      loop: "{{ query('ansible.builtin.inventory_hostnames', 'all') }}"
-      when:
-        - hostvars[item].environment_name == 'production'
-        - hostvars[item].region == 'us-east-1'
+          Cloud Providers:
+          {{ query('ansible.builtin.inventory_hostnames', 'all')
+             | map('extract', hostvars, 'cloud')
+             | unique
+             | sort
+             | list }}
