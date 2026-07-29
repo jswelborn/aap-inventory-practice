@@ -1,15 +1,28 @@
 ---
-- name: Report AWS applications
+- name: Curveball 5
   hosts: localhost
   gather_facts: false
 
-  tasks:
-    - name: Display AWS application report
-      ansible.builtin.debug:
-        msg: >-
-          {{ query('ansible.builtin.inventory_hostnames', 'all')
-           | map('extract', hostvars, 'application_name') 
-           | sort
-           | unique
-           | list }}
+  vars:
+    default_config:
+      timezone: UTC
+      ntp_server: time.company.com
+      logging: enabled
+      backup: daily
 
+    customer_config:
+      timezone: America/New_York
+      backup: weekly
+
+  tasks:
+    - name: Parse inventory
+      ansible.builtin.debug:
+        msg: "{{ default_config | combine(customer_config) }}"
+      tags:
+        - parse_inventory
+
+    - name: Throwaway tasks
+      ansible.builtin.debug:
+        msg: "This is a throwaway task"
+      tags:
+        - throwaway
